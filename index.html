@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Happy Birthday</title>
+    <title>Mystery Birthday</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
@@ -733,6 +733,74 @@
         let vedantCharacter = document.getElementById('vedant');
         let vedantSpeech = document.getElementById('vedantSpeech');
         
+        // Sound Effects System
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Sound effect functions
+        function playSound(frequency, duration, type = 'square', volume = 0.3) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = type;
+            oscillator.frequency.value = frequency;
+            gainNode.gain.value = volume;
+            
+            oscillator.start();
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+        
+        // Different sound effects
+        const sounds = {
+            buttonClick: () => {
+                playSound(200, 0.1);
+                setTimeout(() => playSound(400, 0.1), 50);
+            },
+            success: () => {
+                playSound(300, 0.1);
+                setTimeout(() => playSound(400, 0.1), 100);
+                setTimeout(() => playSound(500, 0.1), 200);
+                setTimeout(() => playSound(600, 0.2), 300);
+            },
+            error: () => {
+                playSound(100, 0.3, 'sawtooth');
+            },
+            jump: () => {
+                for(let i = 0; i < 10; i++) {
+                    setTimeout(() => playSound(200 + (i * 50), 0.05), i * 20);
+                }
+            },
+            powerUp: () => {
+                for(let i = 0; i < 20; i++) {
+                    setTimeout(() => playSound(400 + (i * 20), 0.05, 'sine', 0.2), i * 25);
+                }
+            },
+            celebration: () => {
+                const notes = [523, 659, 784, 1047, 784, 659, 523]; // C, E, G, High C, G, E, C
+                notes.forEach((note, i) => {
+                    setTimeout(() => playSound(note, 0.2, 'sine', 0.3), i * 150);
+                });
+            },
+            typing: () => {
+                playSound(800, 0.05, 'square', 0.1);
+            },
+            whoosh: () => {
+                for(let i = 0; i < 15; i++) {
+                    setTimeout(() => playSound(800 - (i * 40), 0.05, 'sine', 0.2), i * 10);
+                }
+            }
+        };
+        
+        // Add sound to all buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('pixel-btn')) {
+                sounds.buttonClick();
+            }
+        });
+        
         // Vedant's dialogue for each screen
         const vedantDialogue = {
             1: ["It's really me!", "Hope you like it!"],
@@ -803,6 +871,7 @@
                     break;
                 case 'jump':
                     vedantCharacter.classList.add('jumping');
+                    sounds.jump(); // Jump sound
                     setTimeout(() => vedantCharacter.classList.remove('jumping'), 600);
                     break;
                 case 'move':
@@ -835,6 +904,7 @@
                     vedantCharacter.classList.add('paragliding');
                     vedantSpeech.textContent = "Wheeeee!";
                     vedantSpeech.classList.add('show');
+                    sounds.whoosh(); // Paragliding sound
                     
                     // Update position after animation completes
                     setTimeout(() => {
@@ -861,6 +931,7 @@
                     
                     // Flash effect after 0.8 seconds
                     setTimeout(() => {
+                        sounds.powerUp(); // Camera sound
                         document.getElementById('cameraFlash').classList.add('flash');
                         setTimeout(() => {
                             document.getElementById('cameraFlash').classList.remove('flash');
@@ -907,6 +978,7 @@
         }
         
         function wrongAnswer() {
+            sounds.error(); // Error sound
             vedantSpeech.textContent = "Wrong person!";
             vedantSpeech.classList.add('show');
             setTimeout(() => vedantSpeech.classList.remove('show'), 2000);
@@ -931,6 +1003,7 @@
             const interval = setInterval(() => {
                 progress += 15;
                 fill.style.width = progress + '%';
+                sounds.typing(); // Loading tick sound
                 
                 let messageIndex = Math.floor(progress / 15);
                 if (messageIndex < messages.length) {
@@ -939,6 +1012,7 @@
                 
                 if (progress >= 100) {
                     clearInterval(interval);
+                    sounds.powerUp(); // Completion sound
                     setTimeout(() => nextScreen(4), 500);
                 }
             }, 300);
@@ -953,6 +1027,7 @@
             if (d1 && d2 && d3 && d4) {
                 const code = d1 + d2 + d3 + d4;
                 if (code === '1111') {
+                    sounds.success(); // Success sound
                     vedantSpeech.textContent = "Code accepted!";
                     vedantSpeech.classList.add('show');
                     vedantCharacter.classList.add('jumping');
@@ -962,6 +1037,7 @@
                         nextScreen(8);
                     }, 1000);
                 } else {
+                    sounds.error(); // Wrong code sound
                     vedantSpeech.textContent = "Wrong code! Try 1111";
                     vedantSpeech.classList.add('show');
                     // Clear the inputs
@@ -973,17 +1049,21 @@
                     setTimeout(() => vedantSpeech.classList.remove('show'), 2000);
                 }
             } else {
+                sounds.error(); // Incomplete sound
                 vedantSpeech.textContent = "Fill all digits!";
                 vedantSpeech.classList.add('show');
                 setTimeout(() => vedantSpeech.classList.remove('show'), 1500);
             }
         }
         
-        // Auto-move to next input
+        // Auto-move to next input with sound
         document.querySelectorAll('.code-digit').forEach((input, index, inputs) => {
             input.addEventListener('input', (e) => {
-                if (e.target.value && index < inputs.length - 1) {
-                    inputs[index + 1].focus();
+                if (e.target.value) {
+                    sounds.typing(); // Typing sound for each digit
+                    if (index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
                 }
             });
         });
