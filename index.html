@@ -655,10 +655,12 @@
         <!-- Screen 1: Mysterious Start -->
         <div class="screen active" id="screen1">
             <h1 class="glitch">MESSAGE FROM VEDANT</h1>
-            <p style="margin-top: 30px;">Hey Neha!</p>
+            <h3 style="margin-top: 30px;">Hey Neha!</h3>
             <p>Made for your birthday</p>
+            <p>PS: Due to the lack of a PM this is the best a dev could do xD</p>
+            <p>Please provide the feeback on Whatsapp/Instagram or over a call</p>
             <button class="pixel-btn interactive" onclick="nextScreen(2)">OPEN MESSAGE</button>
-            <p class="tap-indicator">TAP TO BEGIN YOUR ADVENTURE</p>
+            <p class="tap-indicator">TAP TO BEGIN</p>
         </div>
         
         <!-- Screen 2: Identity Check -->
@@ -685,10 +687,10 @@
         <div class="screen" id="screen4">
             <h1>EUROPE CHECK-IN!</h1>
             <p>How's your trip going?</p>
-            <button class="pixel-btn interactive" onclick="nextScreen(5)">NOICE</button>
+            <button class="pixel-btn interactive" onclick="nextScreen(5)">IT'S FUN</button>
             <button class="pixel-btn interactive" onclick="nextScreen(5)">WOULD'VE BEEN BETTER WITH THE GANG</button>
             <button class="pixel-btn wrong-btn interactive" onclick="nextScreen(5)">BOHOT THAND HAI</button>
-            <button class="pixel-btn interactive" onclick="nextScreen(5)">GOA/HIMACHAL IS BETTER</button>
+            <button class="pixel-btn interactive" onclick="nextScreen(5)">HIMACHAL IS BETTER :)</button>
         </div>
         
         <!-- Screen 5: Wedding Gift Question -->
@@ -696,7 +698,7 @@
             <h1>FUTURE PLANNING</h1>
             <p>What would you like as<br>your wedding gift?</p>
             <p style="font-size: 8px; margin-top: 10px;">(Whenever you find the guy)</p>
-            <p style="font-size: 7px; margin-top: 5px;">(Aise hi puch rha, pata hai tu return hi karegi)</p>
+            <p style="font-size: 7px; margin-top: 5px;">(Aise hi puch rha, pata hai tu woh bhi return hi karegi)</p>
             <button class="pixel-btn interactive" onclick="nextScreen(6)">DAARU</button>
             <button class="pixel-btn wrong-btn interactive" onclick="nextScreen(6)">FIND ME A GROOM FIRST!</button>
         </div>
@@ -722,14 +724,12 @@
                 <input type="text" class="code-digit" maxlength="1" id="d4">
             </div>
             <button class="pixel-btn interactive" onclick="checkCode()">VERIFY</button>
-            <p style="font-size: 8px;">Hint: The simplest code ever</p>
+            <p>HINT: DDMM</p>
         </div>
         
         <!-- Screen 8: Almost There -->
         <div class="screen" id="screen8">
             <h1>VEDANT'S FINAL REQUEST</h1>
-            <p>Your surprise is loaded!</p>
-            <p>But before I show you...</p>
             <p style="font-size: 12px; margin: 25px 0;">Close your eyes and make a wish!</p>
             <p style="font-size: 8px;">(Maybe wish for that perfect guy?)</p>
             <button class="pixel-btn interactive" onclick="nextScreen(9)">WISHED!</button>
@@ -738,8 +738,6 @@
         <!-- Screen 9: Final Birthday Message -->
         <div class="screen" id="screen9">
             <h1 class="fade-in">HAPPY BIRTHDAY NEHA!</h1>
-            <p class="photo-caption">BIRTHDAY GIRL!</p>
-            
             <div style="text-align: center;">
                 <div class="ascii-cake">
        |||||||
@@ -927,11 +925,10 @@
                     break;
                 case 'speak':
                     const randomPhrases = [
-                        "Keep going!",
-                        "Almost there!",
-                        "This is exciting!",
+                        "Maa ka bhosda aag",
+                        "Daaru peete hai",
                         "Woo-hoo!",
-                        "Let's go!"
+                        "Chai peene chalte hai"
                     ];
                     vedantSpeech.textContent = randomPhrases[Math.floor(Math.random() * randomPhrases.length)];
                     vedantSpeech.classList.add('show');
@@ -1135,7 +1132,7 @@
             
             // Fun alert
             setTimeout(() => {
-                alert("A MESSAGE FROM VEDANT\n\nHAPPY BIRTHDAY NEHA!\n\nI hope this little game made you smile even though you're far away in Europe!\n\nEnjoy your trip, eat ALL the food, take tons of pictures, and don't worry - the perfect guy is out there somewhere (maybe he's European?)\n\nWe miss you here but I'm so happy you're living your best life!\n\nMay this year bring you love, adventure, and everything you're looking for!\n\n- Vedant\n\nP.S. Please bring wine and chocolates, and I hope you get to see the Northern Lights!");
+                alert("A MESSAGE FROM VEDANT\n\nHAPPY BIRTHDAY NEHA!\n\nI hope this little game made you smile even though you're far away in Europe!\n\nEnjoy your trip, eat ALL the food, take tons of pictures,\n\nI miss you but I'm so happy you're living your best life!\n\nMay this year bring you love, adventure, and everything you're looking for!\n\n- Vedant\n\nP.S. Please bring wine and chocolates, and I hope you get to see the Northern Lights too!");
             }, 500);
         }
         
