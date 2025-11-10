@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mystery Birthday</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+        
+        /* Desktop Warning */
+        .desktop-warning {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            padding: 20px;
+            line-height: 1.8;
+        }
+        
+        .desktop-warning h1 {
+            font-size: 24px;
+            margin-bottom: 30px;
+            animation: blink 1s infinite;
+        }
+        
+        .desktop-warning .phone-icon {
+            font-size: 60px;
+            margin: 20px 0;
+            animation: shake 2s infinite;
+        }
+        
+        @media (min-width: 768px) {
+            .desktop-warning {
+                display: block;
+            }
+            .game-container {
+                display: none !important;
+            }
+        }
+        
+        /* Vedant Character */
+        .vedant-container {
+            position: fixed;
+            z-index: 1000;
+            pointer-events: none;
+            transition: all 0.8s ease;
+        }
+        
+        /* Paraglider */
+        .paraglider {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 40px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .paraglider.show {
+            opacity: 1;
+        }
+        
+        /* Multi-section canopy */
+        .paraglider::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 25px;
+            background: 
+                linear-gradient(to right, transparent 0%, #fff 10%, #fff 20%, transparent 20%, 
+                                transparent 25%, #fff 25%, #fff 35%, transparent 35%,
+                                transparent 40%, #fff 40%, #fff 60%, transparent 60%,
+                                transparent 65%, #fff 65%, #fff 75%, transparent 75%,
+                                transparent 80%, #fff 80%, #fff 90%, transparent 100%);
+            clip-path: polygon(0% 100%, 20% 20%, 40% 10%, 50% 0%, 60% 10%, 80% 20%, 100% 100%);
+        }
+        
+        /* Suspension lines */
+        .paraglider::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20%;
+            width: 60%;
+            height: 35px;
+            background: 
+                linear-gradient(to bottom right, transparent 48%, #fff 48%, #fff 50%, transparent 50%),
+                linear-gradient(to bottom left, transparent 48%, #fff 48%, #fff 50%, transparent 50%),
+                linear-gradient(to bottom, transparent 48%, #fff 48%, #fff 50%, transparent 50%);
+            background-size: 50% 100%, 50% 100%, 10% 100%;
+            background-position: left, right, center;
+            background-repeat: no-repeat;
+        }
+        
+        /* Paragliding animation for the whole container */
+        .vedant-container.paragliding {
+            animation: paraglideContainer 4s ease-in-out;
+        }
+        
+        @keyframes paraglideContainer {
+            0% { transform: translate(0, 0); }
+            20% { transform: translate(40px, -60px); }
+            40% { transform: translate(100px, -40px); }
+            60% { transform: translate(160px, -50px); }
+            80% { transform: translate(220px, -20px); }
+            100% { transform: translate(280px, 0); }
+        }
+        
+        /* Vedant rocks back and forth while paragliding */
+        .vedant.paragliding {
+            animation: vedantSwing 1s ease-in-out infinite;
+        }
+        
+        @keyframes vedantSwing {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+        
+        /* Camera for picture taking */
+        .camera {
+            position: absolute;
+            right: -25px;
+            top: 10px;
+            width: 20px;
+            height: 15px;
+            background: #fff;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .camera.show {
+            opacity: 1;
+        }
+        
+        .camera::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 3px;
+            background: #fff;
+        }
+        
+        .camera::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            background: #000;
+            border-radius: 50%;
+        }
+        
+        /* Camera flash effect */
+        .camera-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        .camera-flash.flash {
+            animation: cameraFlash 0.3s;
+        }
+        
+        @keyframes cameraFlash {
+            0% { opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0; }
+        }
+        
+        .vedant {
+            width: 60px;
+            height: 80px;
+            position: relative;
+            animation: vedantBob 2s infinite ease-in-out;
+        }
+        
+        @keyframes vedantBob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        /* Vedant pixel art */
+        .vedant-sprite {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .vedant-head {
+            width: 30px;
+            height: 30px;
+            background: #fff;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .vedant-body {
+            width: 40px;
+            height: 35px;
+            background: #fff;
+            margin: 2px auto 0;
+            position: relative;
+        }
+        
+        .vedant-legs {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 2px;
+        }
+        
+        .vedant-leg {
+            width: 12px;
+            height: 15px;
+            background: #fff;
+        }
+        
+        /* Vedant's eyes that blink */
+        .vedant-eyes {
+            position: absolute;
+            top: 10px;
+            left: 5px;
+            right: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .vedant-eye {
+            width: 4px;
+            height: 4px;
+            background: #000;
+            animation: vedantBlink 4s infinite;
+        }
+        
+        @keyframes vedantBlink {
+            0%, 90%, 100% { height: 4px; }
+            95% { height: 1px; }
+        }
+        
+        /* Vedant's speech bubble */
+        .vedant-speech {
+            position: absolute;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            color: #000;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 8px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            max-width: 200px;
+            white-space: normal;
+            text-align: center;
+            line-height: 1.4;
+        }
+        
+        .vedant-speech.show {
+            opacity: 1;
+        }
+        
+        .vedant-speech::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #fff;
+        }
+        
+        /* Fun animations for Vedant */
+        .vedant.dancing {
+            animation: vedantDance 0.5s infinite;
+        }
+        
+        @keyframes vedantDance {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+        
+        .vedant.jumping {
+            animation: vedantJump 0.6s;
+        }
+        
+        @keyframes vedantJump {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+        
+        .vedant.waving .vedant-body::after {
+            content: '';
+            position: absolute;
+            right: -15px;
+            top: 5px;
+            width: 15px;
+            height: 4px;
+            background: #fff;
+            animation: wave 0.5s infinite;
+            transform-origin: left center;
+        }
+        
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(30deg); }
+        }
+        
+        /* Game Container */
+        .game-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* Screens */
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .screen.active {
+            display: flex;
+        }
+        
+        /* Text Styles */
+        h1 {
+            font-size: 18px;
+            margin: 20px 0;
+            line-height: 1.4;
+        }
+        
+        p {
+            font-size: 10px;
+            line-height: 1.8;
+            margin: 15px 0;
+        }
+        
+        /* Button Styles */
+        .pixel-btn {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-family: inherit;
+            font-size: 10px;
+            margin: 20px 10px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+            box-shadow: 
+                0 0 0 2px #000,
+                0 0 0 4px #fff,
+                0 0 0 6px #000;
+        }
+        
+        .pixel-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 
+                0 0 0 2px #000,
+                0 0 0 3px #fff,
+                0 0 0 4px #000;
+        }
+        
+        .wrong-btn {
+            background: #000;
+            color: #fff;
+        }
+        
+        /* Loading Bar */
+        .loading-container {
+            width: 80%;
+            max-width: 300px;
+            margin: 30px 0;
+        }
+        
+        .loading-bar {
+            width: 100%;
+            height: 30px;
+            border: 3px solid #fff;
+            position: relative;
+            background: #000;
+        }
+        
+        .loading-fill {
+            height: 100%;
+            background: #fff;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .loading-text {
+            font-size: 8px;
+            margin-top: 10px;
+        }
+        
+        /* Glitch Effect */
+        .glitch {
+            position: relative;
+            animation: glitch 0.3s infinite;
+        }
+        
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-1px, 1px); }
+            40% { transform: translate(-1px, -1px); }
+            60% { transform: translate(1px, 1px); }
+            80% { transform: translate(1px, -1px); }
+        }
+        
+        /* Cake ASCII */
+        .ascii-cake {
+            font-size: 8px;
+            line-height: 1;
+            white-space: pre;
+            margin: 20px auto;
+            animation: flicker 2s infinite;
+            font-family: 'Courier New', monospace;
+            letter-spacing: normal;
+            text-align: center;
+            display: inline-block;
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        /* Animations */
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Secret Code Input */
+        .code-input {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .code-digit {
+            width: 40px;
+            height: 40px;
+            background: #000;
+            border: 2px solid #fff;
+            color: #fff;
+            font-family: inherit;
+            font-size: 16px;
+            text-align: center;
+        }
+        
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            position: absolute;
+            animation: fall linear;
+        }
+        
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+        
+        .tap-indicator {
+            font-size: 8px;
+            animation: blink 1s infinite;
+            margin-top: 30px;
+        }
+        
+        /* Pixel heart */
+        .pixel-heart {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin: 0 5px;
+            background: #fff;
+            position: relative;
+            transform: rotate(-45deg);
+            animation: heartbeat 1s infinite;
+        }
+        
+        .pixel-heart:before,
+        .pixel-heart:after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            background: #fff;
+        }
+        
+        .pixel-heart:before {
+            border-radius: 50%;
+            top: -10px;
+            left: 0;
+        }
+        
+        .pixel-heart:after {
+            border-radius: 50%;
+            top: 0;
+            left: 10px;
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: rotate(-45deg) scale(1); }
+            50% { transform: rotate(-45deg) scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Desktop Warning -->
+    <div class="desktop-warning">
+        <h1>HAPPY BIRTHDAY NEHA!</h1>
+        <div class="phone-icon">PHONE</div>
+        <p>Hey! This experience is<br>specially crafted for mobile!</p>
+        <p>Please open on your phone<br>for the full adventure!</p>
+        <p style="font-size: 8px; margin-top: 30px;">Vedant is waiting for you there ;)</p>
+    </div>
+    
+    <!-- Vedant Character -->
+    <div class="vedant-container" id="vedantContainer">
+        <div class="paraglider" id="paraglider"></div>
+        <div class="vedant" id="vedant">
+            <div class="vedant-sprite">
+                <div class="vedant-head">
+                    <div class="vedant-eyes">
+                        <div class="vedant-eye"></div>
+                        <div class="vedant-eye"></div>
+                    </div>
+                </div>
+                <div class="vedant-body">
+                    <div class="camera" id="camera"></div>
+                </div>
+                <div class="vedant-legs">
+                    <div class="vedant-leg"></div>
+                    <div class="vedant-leg"></div>
+                </div>
+            </div>
+        </div>
+        <div class="vedant-speech" id="vedantSpeech"></div>
+    </div>
+    
+    <!-- Camera Flash Effect -->
+    <div class="camera-flash" id="cameraFlash"></div>
+    
+    <!-- Game Container -->
+    <div class="game-container">
+        <!-- Screen 1: Mysterious Start -->
+        <div class="screen active" id="screen1">
+            <h1 class="glitch">MESSAGE FROM VEDANT</h1>
+            <p style="margin-top: 30px;">Hey Neha!</p>
+            <p>Made for your birthday</p>
+            <button class="pixel-btn interactive" onclick="nextScreen(2)">OPEN MESSAGE</button>
+            <p class="tap-indicator">TAP TO BEGIN YOUR ADVENTURE</p>
+        </div>
+        
+        <!-- Screen 2: Identity Check -->
+        <div class="screen" id="screen2">
+            <h1>IDENTITY VERIFICATION</h1>
+            <p>Are you NEHA?</p>
+            <button class="pixel-btn interactive" onclick="wrongAnswer()">NO</button>
+            <button class="pixel-btn interactive" onclick="nextScreen(3)">YES</button>
+            <button class="pixel-btn wrong-btn interactive" onclick="wrongAnswer()">MAYBE</button>
+        </div>
+        
+        <!-- Screen 3: Loading Surprise -->
+        <div class="screen" id="screen3">
+            <h1>LOADING SURPRISE...</h1>
+            <div class="loading-container">
+                <div class="loading-bar">
+                    <div class="loading-fill" id="loadingFill"></div>
+                </div>
+                <p class="loading-text" id="loadingText">INITIALIZING...</p>
+            </div>
+        </div>
+        
+        <!-- Screen 4: Europe Trip Question -->
+        <div class="screen" id="screen4">
+            <h1>EUROPE CHECK-IN!</h1>
+            <p>How's your trip going?</p>
+            <button class="pixel-btn interactive" onclick="nextScreen(5)">NOICE</button>
+            <button class="pixel-btn interactive" onclick="nextScreen(5)">WOULD'VE BEEN BETTER WITH THE GANG</button>
+            <button class="pixel-btn wrong-btn interactive" onclick="nextScreen(5)">BOHOT THAND HAI</button>
+            <button class="pixel-btn interactive" onclick="nextScreen(5)">GOA/HIMACHAL IS BETTER</button>
+        </div>
+        
+        <!-- Screen 5: Wedding Gift Question -->
+        <div class="screen" id="screen5">
+            <h1>FUTURE PLANNING</h1>
+            <p>What would you like as<br>your wedding gift?</p>
+            <p style="font-size: 8px; margin-top: 10px;">(Whenever you find the guy)</p>
+            <p style="font-size: 7px; margin-top: 5px;">(Aise hi puch rha, pata hai tu return hi karegi)</p>
+            <button class="pixel-btn interactive" onclick="nextScreen(6)">DAARU</button>
+            <button class="pixel-btn wrong-btn interactive" onclick="nextScreen(6)">FIND ME A GROOM FIRST!</button>
+        </div>
+        
+        <!-- Screen 6: Age Question -->
+        <div class="screen" id="screen6">
+            <h1>BIRTHDAY MATH TIME!</h1>
+            <p>How old are you turning today?</p>
+            <button class="pixel-btn interactive" onclick="nextScreen(7)">28</button>
+            <button class="pixel-btn interactive" onclick="nextScreen(7)">BSDK AAJ HI PAIDA HUI HU</button>
+            <button class="pixel-btn wrong-btn interactive" onclick="nextScreen(7)">LADKI SE UMAR NI PUCHTE HAI</button>
+        </div>
+        
+        <!-- Screen 7: Secret Code -->
+        <div class="screen" id="screen7">
+            <h1>SECURITY CHECK</h1>
+            <p>Vedant needs to verify it's really you!</p>
+            <p>Enter the secret code</p>
+            <div class="code-input">
+                <input type="text" class="code-digit" maxlength="1" id="d1">
+                <input type="text" class="code-digit" maxlength="1" id="d2">
+                <input type="text" class="code-digit" maxlength="1" id="d3">
+                <input type="text" class="code-digit" maxlength="1" id="d4">
+            </div>
+            <button class="pixel-btn interactive" onclick="checkCode()">VERIFY</button>
+            <p style="font-size: 8px;">Hint: The simplest code ever</p>
+        </div>
+        
+        <!-- Screen 8: Almost There -->
+        <div class="screen" id="screen8">
+            <h1>VEDANT'S FINAL REQUEST</h1>
+            <p>Your surprise is loaded!</p>
+            <p>But before I show you...</p>
+            <p style="font-size: 12px; margin: 25px 0;">Close your eyes and make a wish!</p>
+            <p style="font-size: 8px;">(Maybe wish for that perfect guy?)</p>
+            <button class="pixel-btn interactive" onclick="nextScreen(9)">WISHED!</button>
+        </div>
+        
+        <!-- Screen 9: Final Birthday Message -->
+        <div class="screen" id="screen9">
+            <h1 class="fade-in">HAPPY BIRTHDAY NEHA!</h1>
+            <div style="text-align: center;">
+                <div class="ascii-cake">
+       |||||||
+     |||||||||||
+  |~~~~~~~~~~~~~|
+  |  HAPPY B-DAY |
+  |     NEHA!    |
+  |~~~~~~~~~~~~~|</div>
+            </div>
+            <p class="fade-in">From Vedant, you've unlocked:</p>
+            <p class="fade-in">* Another year of daaru parties and brunches</p>
+            <p class="fade-in">* +100 XP in life</p>
+            <p class="fade-in">* Unlimited cake privileges</p>
+            <p class="fade-in">* More F1 race discussions</p>
+            <p class="fade-in">* More trips together</p>
+            <p class="fade-in">* All my best wishes</p>
+            <div style="margin: 20px 0;">
+                <span class="pixel-heart"></span>
+                <span class="pixel-heart"></span>
+                <span class="pixel-heart"></span>
+            </div>
+            <button class="pixel-btn interactive" onclick="celebrate()">CELEBRATE!</button>
+            <p style="font-size: 8px; margin-top: 20px;">P.S. You forgot my birthday but I didn't forget yours :)</p>
+            <p style="font-size: 8px;">Made with pixels & love by Vedant</p>
+        </div>
+    </div>
+    
+    <script>
+        let currentScreen = 1;
+        let vedantContainer = document.getElementById('vedantContainer');
+        let vedantCharacter = document.getElementById('vedant');
+        let vedantSpeech = document.getElementById('vedantSpeech');
+        
+        // Vedant's dialogue for each screen
+        const vedantDialogue = {
+            1: ["It's really me!", "Hope you like it!"],
+            2: ["I know it's you Neha!", "But I had to check"],
+            3: ["Get ready..."],
+            4: ["How's Europe treating you?", "Eating lots of desserts?"],
+            5: ["Then we'll talk gifts"],
+            6: ["Math was never my strong suit!", "Just pick one!"],
+            7: ["Security protocols!", "Try 1111 if stuck!"],
+            8: ["This is the best part!", "Make it count!", "Maybe wish for Mr. Right?"],
+            9: ["HAPPY BIRTHDAY NEHA!", "Enjoy Europe!", "Hope this made you smile!", "You deserve the best!"]
+        };
+        
+        // Initialize Vedant's position
+        function initVedant() {
+            // Start more centered, not at corner
+            moveVedant(window.innerWidth * 0.6, 150);
+            setTimeout(() => {
+                vedantSpeak(vedantDialogue[1]);
+                vedantCharacter.classList.add('waving');
+                setTimeout(() => vedantCharacter.classList.remove('waving'), 2000);
+            }, 500);
+        }
+        
+        // Move Vedant to a position (with padding from edges)
+        function moveVedant(x, y) {
+            // Keep Vedant away from edges (150px padding from corners)
+            const padding = 150;
+            const maxX = window.innerWidth - 100 - padding;
+            const maxY = window.innerHeight - 150 - padding;
+            
+            x = Math.max(padding, Math.min(x, maxX));
+            y = Math.max(padding, Math.min(y, maxY));
+            
+            vedantContainer.style.left = x + 'px';
+            vedantContainer.style.top = y + 'px';
+        }
+        
+        // Make Vedant speak
+        function vedantSpeak(messages) {
+            let messageIndex = 0;
+            
+            function showNextMessage() {
+                if (messageIndex < messages.length) {
+                    vedantSpeech.textContent = messages[messageIndex];
+                    vedantSpeech.classList.add('show');
+                    
+                    setTimeout(() => {
+                        vedantSpeech.classList.remove('show');
+                        messageIndex++;
+                        setTimeout(showNextMessage, 300);
+                    }, 2000);
+                }
+            }
+            
+            showNextMessage();
+        }
+        
+        // Random Vedant movements and actions
+        function randomVedantAction() {
+            const actions = ['dance', 'jump', 'move', 'wave', 'speak', 'paraglide', 'takePicture'];
+            const action = actions[Math.floor(Math.random() * actions.length)];
+            
+            switch(action) {
+                case 'dance':
+                    vedantCharacter.classList.add('dancing');
+                    setTimeout(() => vedantCharacter.classList.remove('dancing'), 1500);
+                    break;
+                case 'jump':
+                    vedantCharacter.classList.add('jumping');
+                    setTimeout(() => vedantCharacter.classList.remove('jumping'), 600);
+                    break;
+                case 'move':
+                    // Keep movement away from edges (150px padding)
+                    const padding = 150;
+                    const newX = padding + Math.random() * (window.innerWidth - 250 - padding * 2);
+                    const newY = padding + Math.random() * (window.innerHeight - 230 - padding * 2);
+                    moveVedant(newX, newY);
+                    break;
+                case 'wave':
+                    vedantCharacter.classList.add('waving');
+                    setTimeout(() => vedantCharacter.classList.remove('waving'), 800);
+                    break;
+                case 'speak':
+                    const randomPhrases = [
+                        "Keep going!",
+                        "Almost there!",
+                        "This is exciting!",
+                        "Woo-hoo!",
+                        "Let's go!"
+                    ];
+                    vedantSpeech.textContent = randomPhrases[Math.floor(Math.random() * randomPhrases.length)];
+                    vedantSpeech.classList.add('show');
+                    setTimeout(() => vedantSpeech.classList.remove('show'), 1200);
+                    break;
+                case 'paraglide':
+                    // Show paraglider
+                    document.getElementById('paraglider').classList.add('show');
+                    vedantContainer.classList.add('paragliding');
+                    vedantCharacter.classList.add('paragliding');
+                    vedantSpeech.textContent = "Wheeeee!";
+                    vedantSpeech.classList.add('show');
+                    
+                    // Update position after animation completes
+                    setTimeout(() => {
+                        const currentX = parseInt(vedantContainer.style.left);
+                        const currentY = parseInt(vedantContainer.style.top);
+                        // Update the actual position to match where the animation ended
+                        vedantContainer.style.transition = 'none';
+                        moveVedant(currentX + 280, currentY);
+                        
+                        setTimeout(() => {
+                            vedantContainer.style.transition = 'all 0.8s ease';
+                            document.getElementById('paraglider').classList.remove('show');
+                            vedantContainer.classList.remove('paragliding');
+                            vedantCharacter.classList.remove('paragliding');
+                            vedantSpeech.classList.remove('show');
+                        }, 100);
+                    }, 3900);
+                    break;
+                case 'takePicture':
+                    // Show camera
+                    document.getElementById('camera').classList.add('show');
+                    vedantSpeech.textContent = "Say cheese!";
+                    vedantSpeech.classList.add('show');
+                    
+                    // Flash effect after 0.8 seconds
+                    setTimeout(() => {
+                        document.getElementById('cameraFlash').classList.add('flash');
+                        setTimeout(() => {
+                            document.getElementById('cameraFlash').classList.remove('flash');
+                            document.getElementById('camera').classList.remove('show');
+                            vedantSpeech.textContent = "Perfect shot!";
+                            setTimeout(() => vedantSpeech.classList.remove('show'), 800);
+                        }, 300);
+                    }, 800);
+                    break;
+            }
+        }
+        
+        // Start random actions - FASTER NOW (every 2 seconds instead of 4)
+        setInterval(randomVedantAction, 2000);
+        
+        function nextScreen(screenNumber) {
+            document.getElementById(`screen${currentScreen}`).classList.remove('active');
+            document.getElementById(`screen${screenNumber}`).classList.add('active');
+            currentScreen = screenNumber;
+            
+            // Vedant reacts to screen changes
+            if (vedantDialogue[screenNumber]) {
+                setTimeout(() => {
+                    vedantSpeak(vedantDialogue[screenNumber]);
+                    
+                    // Special animations for specific screens
+                    if (screenNumber === 3) {
+                        vedantCharacter.classList.add('dancing');
+                        setTimeout(() => vedantCharacter.classList.remove('dancing'), 3000);
+                    } else if (screenNumber === 7) {
+                        vedantCharacter.classList.add('jumping');
+                        setTimeout(() => {
+                            vedantCharacter.classList.remove('jumping');
+                            vedantCharacter.classList.add('dancing');
+                        }, 600);
+                    }
+                }, 300);
+            }
+            
+            // Special handling for loading screen
+            if (screenNumber === 3) {
+                startLoading();
+            }
+        }
+        
+        function wrongAnswer() {
+            vedantSpeech.textContent = "Wrong person!";
+            vedantSpeech.classList.add('show');
+            setTimeout(() => vedantSpeech.classList.remove('show'), 2000);
+            
+            alert("ERROR 404: WRONG PERSON!\nThis message is only for NEHA!");
+        }
+        
+        function startLoading() {
+            let progress = 0;
+            const fill = document.getElementById('loadingFill');
+            const text = document.getElementById('loadingText');
+            const messages = [
+                'INITIALIZING...',
+                'LOADING CAKE.EXE...',
+                'ADDING CANDLES...',
+                'GENERATING WISHES...',
+                'WRAPPING PRESENTS...',
+                'ALMOST THERE...',
+                'SURPRISE READY!'
+            ];
+            
+            const interval = setInterval(() => {
+                progress += 15;
+                fill.style.width = progress + '%';
+                
+                let messageIndex = Math.floor(progress / 15);
+                if (messageIndex < messages.length) {
+                    text.textContent = messages[messageIndex];
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => nextScreen(4), 500);
+                }
+            }, 300);
+        }
+        
+        function checkCode() {
+            const d1 = document.getElementById('d1').value;
+            const d2 = document.getElementById('d2').value;
+            const d3 = document.getElementById('d3').value;
+            const d4 = document.getElementById('d4').value;
+            
+            if (d1 && d2 && d3 && d4) {
+                const code = d1 + d2 + d3 + d4;
+                if (code === '1111') {
+                    vedantSpeech.textContent = "Code accepted!";
+                    vedantSpeech.classList.add('show');
+                    vedantCharacter.classList.add('jumping');
+                    setTimeout(() => {
+                        vedantSpeech.classList.remove('show');
+                        vedantCharacter.classList.remove('jumping');
+                        nextScreen(8);
+                    }, 1000);
+                } else {
+                    vedantSpeech.textContent = "Wrong code! Try 1111";
+                    vedantSpeech.classList.add('show');
+                    // Clear the inputs
+                    document.getElementById('d1').value = '';
+                    document.getElementById('d2').value = '';
+                    document.getElementById('d3').value = '';
+                    document.getElementById('d4').value = '';
+                    document.getElementById('d1').focus();
+                    setTimeout(() => vedantSpeech.classList.remove('show'), 2000);
+                }
+            } else {
+                vedantSpeech.textContent = "Fill all digits!";
+                vedantSpeech.classList.add('show');
+                setTimeout(() => vedantSpeech.classList.remove('show'), 1500);
+            }
+        }
+        
+        // Auto-move to next input
+        document.querySelectorAll('.code-digit').forEach((input, index, inputs) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            });
+        });
+        
+        function celebrate() {
+            // Vedant goes crazy with celebration
+            vedantCharacter.classList.add('dancing');
+            vedantSpeech.textContent = "PARTY TIME! 🎉🎊🎈";
+            vedantSpeech.classList.add('show');
+            
+            // Create confetti
+            for (let i = 0; i < 50; i++) {
+                createConfetti();
+            }
+            
+            // Move Vedant around in celebration
+            let celebrationMoves = 0;
+            const celebrationInterval = setInterval(() => {
+                const newX = Math.random() * (window.innerWidth - 100);
+                const newY = Math.random() * (window.innerHeight - 150);
+                moveVedant(newX, newY);
+                celebrationMoves++;
+                
+                if (celebrationMoves > 5) {
+                    clearInterval(celebrationInterval);
+                    vedantCharacter.classList.remove('dancing');
+                }
+            }, 500);
+            
+            // Fun alert
+            setTimeout(() => {
+                alert("A MESSAGE FROM VEDANT\n\nHAPPY BIRTHDAY NEHA!\n\nI hope this little game made you smile even though you're far away in Europe!\n\nEnjoy your trip, eat ALL the food, take tons of pictures, and don't worry - the perfect guy is out there somewhere (maybe he's European?)\n\nWe miss you here but I'm so happy you're living your best life!\n\nMay this year bring you love, adventure, and everything you're looking for!\n\n- Vedant\n\nP.S. Save me some chocolates from Switzerland!");
+            }, 500);
+        }
+        
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            confetti.style.opacity = Math.random();
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => confetti.remove(), 5000);
+        }
+        
+        // Initialize Vedant when page loads
+        window.addEventListener('load', initVedant);
+        
+        // Prevent zooming on double tap
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
